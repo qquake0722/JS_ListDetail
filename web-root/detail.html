@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Detail Template</title>
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+        <style>
+            /* template css */
+            body {
+                display: flex;
+                justify-content: center;
+            }
+            #detailWrapper {
+                position: relative;
+                width: 500px;
+                height: 100%;
+                border: 1px solid #ddd;
+            }
+            #backButton {
+                position: absolute;
+                top: 30px;
+                left: 30px;
+                width: 30px;
+                height: 30px;
+                background: transparent url("./images/back_arrow.png") no-repeat center;
+                background-size: cover;
+                border: none;
+                cursor: pointer;
+            }
+            #detailTitle {
+                text-align: center;
+            }
+            #detailSubtitle {
+                text-align: center;
+            }
+            #detailTable {
+                width: 100%;
+                margin: 30px 0 60px;
+                padding: 0 60px;
+            }
+            #detailTable th {
+                width: 100px;
+                padding: 5px 20px;
+                text-align: right;
+                vertical-align: top;
+            }
+            #detailTable td {
+                padding: 5px 20px;
+                text-align: left;
+                vertical-align: top;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="detailWrapper">
+            <button id="backButton"></button>
+            <h2 id="detailTitle"></h1>
+            <p id="detailSubtitle"></p>
+            <table id="detailTable">
+                <tbody>
+                    <tr>
+                        <th>작사</th>
+                        <td id="lyricist"></td>
+                    </tr>
+                    <tr>
+                        <th>작곡</th>
+                        <td id="melodizer"></td>
+                    </tr>
+                    <tr>
+                        <th>장르</th>
+                        <td id="genre"></td>
+                    </tr>
+                </tbody>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(() => {
+
+                $('#backButton').click(function () {
+                    location.href = "index.html";
+                });
+
+                var val = location.href.substr(
+				    location.href.lastIndexOf('=') + 1
+                );
+                
+                // get detail data
+                $.getJSON( 'http://localhost:3300/v1/chart/detail/' + val, { get_param: 'value' }, function( json ) {
+                    var item = json.chart;
+                    $('#detailTitle').text(item.title);
+                    $('#detailSubtitle').text(item.singer);
+                    $('#lyricist').text(item.lyricist);
+                    $('#melodizer').text(item.melodizer);
+                    $('#genre').text(item.genre);
+                });
+            });
+        </script>
+    </body>
+</html>

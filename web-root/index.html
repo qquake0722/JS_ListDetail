@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>List Detail Template</title>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+        <style>
+            /* jquery-ui.css tabs override */
+            .ui-widget.ui-widget-content {
+                border: none;
+                padding: 0;
+            }
+            .ui-widget-header {
+                background: none;
+                border: none;
+            }
+            .ui-tabs .ui-tabs-nav {
+                padding: 0;
+            }
+            .ui-tabs .ui-tabs-nav li {
+                margin: 0;
+                width: 50%;
+                background: none;
+                border: none;
+                border-bottom: 1px solid #ddd;
+                border-radius: 0;
+            }
+            .ui-tabs .ui-tabs-nav li.ui-tabs-active {
+                margin: 0;
+                padding: 0;
+                background: none;
+                border-color: red;
+            }
+            .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 1rem 0;
+            }
+            .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+                background: #ddd;
+            }
+            .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+                color: red;
+            }
+            .ui-tabs .ui-tabs-panel {
+                padding: 0;
+            }
+
+            /* template css */
+            body {
+                display: flex;
+                justify-content: center;
+            }
+            #listWrapper {
+                width: 500px;
+                border: 1px solid #ddd;
+            }
+            #listTitle {
+                text-align: center;
+            }
+            #datetime {
+                text-align: center;
+            }
+            .tab-list {
+                margin: 0;
+                padding: 0;
+            }
+            .tab-list li {
+                display: flex;
+                height: 70px;
+                padding: 5px 20px;
+                align-items: center;
+                list-style-type: none;
+                cursor: pointer;
+            }
+            .tab-list li + li {
+                border-top: 1px solid #ddd;
+            }
+            .tab-list li .rank{
+                flex: 0 0 auto;
+                width: 25px;
+                margin-right: 20px;
+                text-align: right;
+            }
+            .tab-list li .image{
+                display: flex;
+                align-items: center;
+                flex: 0 0 auto;
+                width: 60px;
+                height: 60px;
+                margin-right: 20px;
+            }
+            .tab-list li .image img{
+                width: 60px;
+                height: 100%;
+            }
+            .tab-list li .title{
+                flex: 1 1 auto;
+                margin-right: 20px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .tab-list li .singer{
+                flex: 1 1 auto;
+                min-width: 100px;
+                text-align: right;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="listWrapper">
+            <h1 id="listTitle">List name</h1>
+            <p id="datetime"></p>
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tab1">Tab 1</a></li>
+                    <li><a href="#tab2">Tab 2</a></li>
+                </ul>
+                <div id="tab1"></div>
+                <div id="tab2"></div>
+            </div>
+        </div>
+        <script type="text/javascript">
+
+            var moveDetail = function(id) { location.href = "./detail.html?id=" + id; };
+
+            $(document).ready(() => {
+
+                // get current date time
+                var now = new Date();
+                var year=now.getFullYear();
+                var month=now.getMonth()+1;
+                var date=now.getDate();
+                var hr=now.getHours();
+                var min=now.getMinutes();
+                $('#datetime').html(year + '년 ' + month + '월 ' + date + '일 ' + hr + ':' + min);
+
+                // tabs
+                $(function() {
+                    $('#tabs').tabs();
+                });
+                
+                // get domestic list
+                $.getJSON( 'http://localhost:3300/v1/chart/domestic', { get_param: 'value' }, function( json ) {
+                    var items = [];
+                    $.each(json.chartList, function(index, item) {
+                        items.push(
+                            '<li onclick="moveDetail(' + item.id + ')">' + 
+                                '<div class="rank">' + item.rank + '</div>' + 
+                                '<div class="image"><img src="./images/' + item.imageUrl + '" alt="alt image" /></div>' + 
+                                '<div class="title">' + item.title + '</div>' + 
+                                '<div class="singer">' + item.singer + '</div>' + 
+                            '</li>'
+                        );
+                    });
+                    $('<ul/>', {
+                        'class': 'tab-list',
+                        html: items.join('')
+                    }).appendTo($('#tab1'));
+                });
+
+                // get overseas list
+                $.getJSON( 'http://localhost:3300/v1/chart/overseas', { get_param: 'value' }, function( json ) {
+                    var items = [];
+                    $.each(json.chartList, function(index, item) {
+                        items.push(
+                            '<li onclick="moveDetail(' + item.id + ')">' + 
+                                '<div class="rank">' + item.rank + '</div>' + 
+                                '<div class="image"><img src="./images/' + item.imageUrl + '" alt="alt image" /></div>' + 
+                                '<div class="title">' + item.title + '</div>' + 
+                                '<div class="singer">' + item.singer + '</div>' + 
+                            '</li>'
+                        );
+                    });
+                    $('<ul/>', {
+                        'class': 'tab-list',
+                        html: items.join('')
+                    }).appendTo($('#tab2'));
+                });
+            });
+        </script>
+    </body>
+</html>
